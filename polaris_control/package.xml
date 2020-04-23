@@ -1,0 +1,37 @@
+<package>
+  <name>polaris_control</name>
+  <version>0.1.0</version>
+  <description>Control steer and drive of Polaris Ranger EV</description>
+  <maintainer email="cdimoush@gmail.com">Conner Dimoush</maintainer>
+
+  <license>BSD</license>
+  <author email="cdimoush@gmail.com">Conner Dimoush</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>gazebo</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>angles</build_depend>  
+  <build_depend>std_srvs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>  
+  <build_depend>nav_msgs</build_depend>  
+  <build_depend>urdf</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+ 
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>angles</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+ </package>

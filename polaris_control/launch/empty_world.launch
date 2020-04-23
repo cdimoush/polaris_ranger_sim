@@ -1,0 +1,67 @@
+<launch>
+
+  <arg name="topic_from_steer_controller" default="steer_effort" />
+  <arg name="topic_from_drive_controller" default="drive_effort" />
+  <arg name="topic_from_steer_plant" default="steer_state" />
+  <arg name="topic_from_drive_plant" default="drive_state" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_polaris" textfile="$(find polaris_description)/models/model-1_4_camera.sdf" />
+
+  <node
+    name="polaris_1"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="-sdf -param robot_polaris -model polaris_1 -x 5.0"
+    output="screen">
+    <param name="topic_from_steer_controller" value="$(arg topic_from_steer_controller)" />
+    <param name="topic_from_drive_controller" value="$(arg topic_from_drive_controller)" />
+    <param name="topic_from_steer_plant" value="$(arg topic_from_steer_plant)" />
+    <param name="topic_from_drive_plant" value="$(arg topic_from_drive_plant)" />
+  </node>
+
+  <group ns="polaris_1">
+  <node name="polaris_velocity_pid" pkg="pid" type="controller" output="screen" >
+      <param name="Kp" value="5.0" />
+      <param name="Ki" value="0.0" />
+      <param name="Kd" value="0.1" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="cutoff_frequency" value="20" />
+      <param name="max_loop_frequency" value="105.0" />
+      <param name="min_loop_frequency" value="95.0" />
+      <param name="setpoint_timeout" value="-1.0" />
+      <param name="setpoint_topic" value="drive_setpoint" />
+      <param name="topic_from_controller" value="$(arg topic_from_drive_controller)"/>
+      <param name="topic_from_plant" value="$(arg topic_from_drive_plant)"/>
+  </node>
+
+<!--   <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot"
+    args="/polaris1/drive_effort/data /polaris1/drive_state/data" /> -->
+
+  <node name="polaris_steer_pid" pkg="pid" type="controller" output="screen" >
+      <param name="Kp" value="5.0" />
+      <param name="Ki" value="0.0" />
+      <param name="Kd" value="0.1" />
+      <param name="upper_limit" value="1" />
+      <param name="lower_limit" value="-1" />
+      <param name="windup_limit" value="10" />
+      <param name="cutoff_frequency" value="20" />
+      <param name="max_loop_frequency" value="105.0" />
+      <param name="min_loop_frequency" value="95.0" />
+      <param name="setpoint_timeout" value="-1.0" />
+      <param name="setpoint_topic" value="steer_setpoint" />
+      <param name="topic_from_controller" value="$(arg topic_from_steer_controller)"/>
+      <param name="topic_from_plant" value="$(arg topic_from_steer_plant)"/>
+  </node>
+
+  </group>
+</launch>
