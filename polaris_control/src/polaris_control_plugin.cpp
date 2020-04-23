@@ -301,7 +301,6 @@ double* ControlPlugin::ackermanCalcs(double* theta, double* w)
   //1) calculate error
   error = theoretical - theta[2];
   //2) adjust wheel velocity based on error
-  ROS_INFO("t0: %f, t1: %f, t2: %f, error: %f", theta[0], theta[1], theta[2], error);
   if (fabs(error) > 1e-6)
   {
     w_correction = a*error / 3.1415;
