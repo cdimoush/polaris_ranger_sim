@@ -1,17 +1,28 @@
 <launch>
   <!-- 
   Launch File
-  1) Spawn polaris in empty world. 
+  1) Spawn polaris in outdoor_sandbox world. 
     -Specify init pose 
   2) Start steer and drive PID controllers  
   -->
 
+  <arg name="steer_setpoint_topic" default="steer_setpoint" />
+  <arg name="drive_setpoint_topic" default="drive_setpoint" />
   <arg name="topic_from_steer_controller" default="steer_effort" />
   <arg name="topic_from_drive_controller" default="drive_effort" />
   <arg name="topic_from_steer_plant" default="steer_state" />
   <arg name="topic_from_drive_plant" default="drive_state" />
+  <arg name="launch_rviz" default="true"/>
+
+  <arg name="x" default="80.5"/>
+  <arg name="y" default="-33.5"/>
+  <arg name="z" default="-26"/>
+  <arg name="roll" default="0"/>
+  <arg name="pitch" default="0"/>
+  <arg name="yaw" default="0.629"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find polaris_description)/worlds/outdoor_sandbox.world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
@@ -19,13 +30,17 @@
     <arg name="debug" value="false"/>
   </include>
 
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find polaris_control)/config/polaris_camera.rviz" if="$(arg launch_rviz)" />
+  
+
   <param name="robot_polaris" textfile="$(find polaris_description)/models/model-1_4_camera.sdf" />
 
   <node
     name="polaris_1"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="-sdf -param robot_polaris -model polaris_1 -x 5.0"
+    args="-sdf -param robot_polaris -model polaris_1 -x $(arg x) -y $(arg y) -z $(arg z)
+              -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
     output="screen">
     <param name="topic_from_steer_controller" value="$(arg topic_from_steer_controller)" />
     <param name="topic_from_drive_controller" value="$(arg topic_from_drive_controller)" />
@@ -34,7 +49,7 @@
   </node>
 
   <group ns="polaris_1">
-  <node name="polaris_velocity_pid" pkg="pid" type="controller" output="screen" >
+  <node name="polaris_drive_pid" pkg="pid" type="controller" output="screen" >
       <param name="Kp" value="5.0" />
       <param name="Ki" value="0.0" />
       <param name="Kd" value="0.1" />
@@ -45,7 +60,7 @@
       <param name="max_loop_frequency" value="105.0" />
       <param name="min_loop_frequency" value="95.0" />
       <param name="setpoint_timeout" value="-1.0" />
-      <param name="setpoint_topic" value="drive_setpoint" />
+      <param name="setpoint_topic" value="$(arg drive_setpoint_topic)" />
       <param name="topic_from_controller" value="$(arg topic_from_drive_controller)"/>
       <param name="topic_from_plant" value="$(arg topic_from_drive_plant)"/>
   </node>
@@ -61,10 +76,9 @@
       <param name="max_loop_frequency" value="105.0" />
       <param name="min_loop_frequency" value="95.0" />
       <param name="setpoint_timeout" value="-1.0" />
-      <param name="setpoint_topic" value="steer_setpoint" />
+      <param name="setpoint_topic" value="$(arg steer_setpoint_topic)" />
       <param name="topic_from_controller" value="$(arg topic_from_steer_controller)"/>
       <param name="topic_from_plant" value="$(arg topic_from_steer_plant)"/>
   </node>
-
   </group>
 </launch>

@@ -13,7 +13,7 @@ include_directories(${GAZEBO_INCLUDE_DIRS})
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES
-    CATKIN_DEPENDS roscpp
+    CATKIN_DEPENDS roscpp rospy
     DEPENDS gazebo
 )
 
@@ -21,6 +21,8 @@ catkin_package(
 add_library(polaris_control_plugin src/polaris_control_plugin.cpp)
 target_link_libraries(polaris_control_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(polaris_waypoint_follower src/polaris_waypoint_follower.cpp)
+target_link_libraries(polaris_waypoint_follower ${catkin_LIBRARIES})
 
 install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

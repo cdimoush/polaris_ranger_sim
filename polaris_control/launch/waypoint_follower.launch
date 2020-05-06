@@ -1,0 +1,34 @@
+<launch>
+  <!-- 
+  Launch File
+  1) Start waypoint follower 
+    -Specify
+      -Max steer velocity 
+      -Max steer angle
+      -Waypoint file
+      -Setpoint topics
+  -->
+
+  <arg name="steer_setpoint_topic" default="steer_setpoint" />
+  <arg name="drive_setpoint_topic" default="drive_setpoint" />
+  <arg name="topic_from_steer_controller" default="steer_effort" />
+  <arg name="topic_from_drive_controller" default="drive_effort" />
+  <arg name="topic_from_steer_plant" default="steer_state" />
+  <arg name="topic_from_drive_plant" default="drive_state" />
+
+  <arg name="max_vel" default="12.0" />
+  <arg name="max_steer" default="0.4" />
+  <arg name="waypoint_data_address" default="/home/conner/gazebo_ws/learning_ws/src/polaris_ranger_sim/polaris_control/config/waypoints_sonoma.txt" />
+
+  <group ns="polaris_1">
+
+  <node name="waypoint_follower" pkg="polaris_control" type="polaris_waypoint_follower" output="screen" >
+    <param name="max_vel" value="$(arg max_vel)" type="double"/>
+    <param name="max_steer" value="$(arg max_steer)" type="double"/>
+    <param name="waypoint_data_address" value="$(arg waypoint_data_address)"/>
+    <param name="steer_setpoint_topic" value="$(arg steer_setpoint_topic)"/>
+    <param name="drive_setpoint_topic" value="$(arg drive_setpoint_topic)"/>
+  </node>
+
+  </group>
+</launch>

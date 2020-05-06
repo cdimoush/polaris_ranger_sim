@@ -22,6 +22,7 @@
   <build_depend>urdf</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
+
  
   <!-- Dependencies needed after this package is compiled. -->
   <run_depend>roscpp</run_depend>
@@ -34,4 +35,5 @@
   <run_depend>urdf</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>pid</run_depend> <!-- pid package: http://wiki.ros.org/pid</url> -->
  </package>

@@ -124,7 +124,7 @@ void ControlPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   transform_broadcaster_ = new tf::TransformBroadcaster();
 
   // Get controller topic names
-  rosnode_->param<std::string>("topic_from_steer_controller", topic_from_steer_controller_, "fuck_this");
+  rosnode_->getParam("topic_from_steer_controller", topic_from_steer_controller_);
   rosnode_->getParam("topic_from_drive_controller", topic_from_drive_controller_);
   rosnode_->getParam("topic_from_steer_plant", topic_from_steer_plant_);
   rosnode_->getParam("topic_from_drive_plant", topic_from_drive_plant_);
@@ -167,7 +167,6 @@ void ControlPlugin::Init()
   callback_queue_thread_ = boost::thread(boost::bind(&ControlPlugin::QueueThread, this));
 }
 
-
 // Reset
 void ControlPlugin::Reset()
 {
@@ -185,19 +184,15 @@ void ControlPlugin::Update()
   //Update time
   common::Time stepTime;
 
-  // for ( int i = 0; i < 2; i++ ) 
-  // {
-  //    if ( fabs(drive_torque_ -joints[i]->GetParam ( "fmax", 0 )) > 1e-6 ) 
-  //       joints[i]->SetParam ( "fmax", 0, drive_torque_);
-  // }
-
   stepTime = world->GetSimTime() - prevUpdateTime;
   prevUpdateTime = world->GetSimTime();
 
   //USE LOCK TO GET ACCESS TO THE 'ACCELERATION_' AND 'STEER_VELOCITY_' VARIABLES
   lock.lock();
 
-  drive_vel_ = drive_vel_ + drive_acc_*stepTime.Float();
+  math::Vector3 velocity = link->GetRelativeLinearVel();
+  if (std::signbit(velocity.x) !=  std::signbit(drive_acc_)) drive_vel_ = 0;
+  else drive_vel_ = velocity.x + drive_acc_*stepTime.Float();
 
   //SET SPEED LIMITS
   if (drive_vel_ > 20) drive_vel_ = 20; 
@@ -254,18 +249,24 @@ void ControlPlugin::Update()
 
   }
 
-  //Publish feedback to PID controllers 
-  std_msgs::Float64 steer_state_msg;
-  std_msgs::Float64 drive_state_msg;
-
-  steer_state_msg.data = steer_angle_[0];
-  drive_state_msg.data = drive_vel_;
-
-  steer_pub_.publish(steer_state_msg);
-  drive_pub_.publish(drive_state_msg);
-
   lock.unlock();
+
+  //PUBLISH FEEDBACK TO PID CONTROLLERS
+  //-----------------------------------
+  //steer feedback
+  std_msgs::Float64 steer_state_msg;
+  steer_state_msg.data = steer_angle_[0];
+  steer_pub_.publish(steer_state_msg);
+  
+
+  //drive feedback
+  std_msgs::Float64 drive_state_msg;
+  drive_state_msg.data = velocity.x;
+  drive_pub_.publish(drive_state_msg);
+  
+  //Publish Polaris Odometry
   publish_odometry();
+
 }
 
 double* ControlPlugin::ackermanCalcs(double* theta, double* w)
@@ -388,8 +389,6 @@ void ControlPlugin::publish_odometry()
 
 
   pub_.publish(odom_);
-
-
 }
 
 GZ_REGISTER_MODEL_PLUGIN(ControlPlugin)
