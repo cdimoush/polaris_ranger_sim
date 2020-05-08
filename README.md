@@ -4,6 +4,9 @@ This package is a gazebo control plugin for a Polaris Ranger Ev. The package use
 
 This package also offers keyboard teleoperation and a waypoint follower. 
 
+![Waypoint](images/polaris_rviz.png "Polaris Outdoor World")
+*Polaris at Sonoma Raceway with RVIZ camera feed*
+
 ## roslaunch 
 
 The outdoor_world launch file spawns the Polaris (w/ controllers) in the outdoor sandbox world. Topics and PID arguments can be adjusted inside this file. 
@@ -29,3 +32,6 @@ roslaunch polaris_control waypoint_follower.launch
 Waypoints can be set during keyboard teleop by pressing the spacebar. These waypoints will be exported to text file specified as an argument in the launch file. 
 
 The waypoint follower interprets these text files.  
+
+![Waypoint](images/polaris_waypoint_follower.png "Title")
+*Polaris following waypoints*
